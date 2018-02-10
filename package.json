@@ -1,0 +1,55 @@
+{
+	"name": "schdule",
+	"version": "0.0.1-alpha-1",
+	"license": "SEE LICENSE IN LICENSE",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:TheRohans/schedule.git"
+	},
+	"author": {
+		"name": "Rob Rohan",
+		"email": "rob@therohans.com",
+		"url": "https://robrohan.com"
+	},
+	"scripts": {
+		"build": "NODE_ENV=production node node_modules/.bin/webpack --display-error-details --progress -p",
+		"start": "NODE_ENV=development node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js -d --progress --https --watch --port 8080 --hot --host 0.0.0.0",
+		"test": "NODE_ENV=test karma start --log-level debug --browsers ChromeHeadless --single-run --reporters=spec",
+		"test:full": "NODE_ENV=test karma start --log-level debug --browsers ChromeHeadless --single-run --code-coverage --reporters=spec,kjhtml,karma-remap-istanbul",
+		"lint": "tslint --config tslint.json --project ."
+	},
+	"dependencies": {
+		"document-register-element": "^1.7.0"
+	},
+	"devDependencies": {
+		"@types/jasmine": "^2.6.0",
+		"@types/node": "^9.4.4",
+		"babel-core": "^6.26.0",
+		"babel-loader": "^7.1.2",
+		"css-loader": "^0.28.5",
+		"eslint": "^4.17.0",
+		"file-loader": "^0.11.2",
+		"html-loader": "^0.5.1",
+		"image-webpack-loader": "^3.4.2",
+		"jasmine-core": "^2.8.0",
+		"jasmine-spec-reporter": "^3.2.0",
+		"karma": "1.4.1",
+		"karma-chrome-launcher": "^2.2.0",
+		"karma-cli": "^1.0.1",
+		"karma-coverage-istanbul-reporter": "^0.2.0",
+		"karma-jasmine": "^1.1.0",
+		"karma-jasmine-html-reporter": "^0.2.2",
+		"karma-remap-istanbul": "^0.6.0",
+		"karma-spec-reporter": "^0.0.31",
+		"karma-webpack": "^2.0.4",
+		"node-sass": "^4.5.3",
+		"postcss-loader": "^2.0.6",
+		"sass-loader": "^6.0.6",
+		"strip-loader": "^0.1.2",
+		"ts-loader": "^2.3.4",
+		"tslint": "^5.0.0",
+		"typescript": "^2.5.3",
+		"webpack": "^3.5.5",
+		"webpack-dev-server": "^2.7.1"
+	}
+}
