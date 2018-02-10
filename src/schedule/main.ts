@@ -2,6 +2,10 @@ require('document-register-element');
 const html = require('./main.html');
 const css = require('../style/main.scss');
 
+import { Http } from '../http/http';
+import { CalendarParser } from '../icalendar/parser';
+
+
 // Gets the template DOM element from the given document
 const getTemplate = (doc: any) => {
   const template = doc.querySelector('template');
@@ -112,7 +116,17 @@ const createSchedule = (parent: any, template: any) => {
       Schedule.year = this.getAttribute('year');
     }
 
-    console.log(Schedule.year);
+    const http = new Http();
+    const parser = new CalendarParser();
+    http.xhr<string>('style/assets/2018.ics').then( v => {
+      parser.parse(v);
+      console.log(parser.findEvents('TS1-8879A068-CE13-4DD3-B7FE-4890126284A8'));
+
+      const searchDate = new Date(Date.parse('2018-01-06'));
+      console.log(searchDate);
+      console.log(parser.findByDate( searchDate ));
+    });
+
     const squares = shadowRoot.querySelector('.squares');
     renderCalendar(Schedule.year, squares).then( (success) => {
       console.log('Done');

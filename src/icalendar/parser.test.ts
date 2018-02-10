@@ -1,0 +1,42 @@
+import { CalendarParser } from './parser';
+
+const testFile = `BEGIN:VCALENDAR
+VERSION:2.0
+X-WR-CALNAME:ramp-up
+PRODID:-//Rob Rohan//Emacs with Org mode//EN
+X-WR-TIMEZONE:AEDT
+X-WR-CALDESC:ramp-up
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+DTSTAMP:20180120T021231Z
+UID:TS1-8879A068-CE13-4DD3-B7FE-4890126284A8
+DTSTART;VALUE=DATE:20171218
+DTEND;VALUE=DATE:20171219
+SUMMARY:🛌Rest
+DESCRIPTION:<2017-12-18>
+CATEGORIES:ramp-up
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20180120T021231Z
+UID:TS1-E49D17F9-9D70-4EAA-A92D-B65FEB586BFF
+DTSTART;VALUE=DATE:20171219
+DTEND;VALUE=DATE:20171220
+SUMMARY:🏃🤙🏻Easy Run
+DESCRIPTION:<2017-12-19> 4.5km
+CATEGORIES:ramp-up
+END:VEVENT
+END:VCALENDAR
+`;
+
+
+describe('ICalendar Parser', () => {
+
+  it('should parse an ical file into a struct', () => {
+    const p = new CalendarParser();
+
+    p.parse(testFile);
+
+    expect(true).toBe(false);
+  });
+
+});
