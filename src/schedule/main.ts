@@ -5,7 +5,6 @@ const css = require('../style/main.scss');
 import { Http } from '../http/http';
 import { CalendarParser } from '../icalendar/parser';
 
-
 // Gets the template DOM element from the given document
 const getTemplate = (doc: any) => {
   const template = doc.querySelector('template');
@@ -47,6 +46,15 @@ const getDocuments = (doc: any) => {
 //   curtain.classList.toggle('show');
 // };
 
+// Date -> String (used for ID selection)
+const formatDateLookup = (date: Date): string => {
+  return [
+    date.getFullYear(),
+    ('0' + (date.getMonth() + 1)).slice(-2),
+    ('0' + date.getDate()).slice(-2)
+  ].join('');
+};
+
 const renderCalendar = (year: number, squares: any): Promise<boolean> => {
   const startDate = new Date(year, 0, 1);
   const iterateDate = new Date();
@@ -69,14 +77,38 @@ const renderCalendar = (year: number, squares: any): Promise<boolean> => {
           `<li data-level="-1"></li>`
         );
       } else {
+        // Hook for us to set any events on the calendar
+        const date = formatDateLookup(iterateDate);
         squares.insertAdjacentHTML(
           'beforeend',
-          `<li data-level="${level}" title="${iterateDate.toDateString()}"></li>`
+          `<li id="D${date}"
+               data-level="${level}"
+               data-pos="${i % 7}-${(Math.max(0, i - 181) > 0 ? 1 : 0)}"
+               title="${iterateDate.toDateString()}
+           "><div></div></li>`
         );
         iterateDate.setDate(iterateDate.getDate() + 1);
       }
     }
     resolve(true);
+  });
+};
+
+const populateCalendar = (calendars: string[]): Promise<CalendarParser> => {
+  return new Promise( (resolve, reject) => {
+    const parser = new CalendarParser();
+    const http = new Http();
+    try {
+      const allPromise = calendars.map(cal => http.xhr<string>(cal));
+      Promise.all(allPromise).then( result => {
+        result.forEach( r => {
+          parser.parse(r);
+        });
+        resolve(parser);
+      });
+    } catch (e) {
+      reject(e);
+    }
   });
 };
 
@@ -116,21 +148,23 @@ const createSchedule = (parent: any, template: any) => {
       Schedule.year = this.getAttribute('year');
     }
 
-    const http = new Http();
-    const parser = new CalendarParser();
-    http.xhr<string>('style/assets/2018.ics').then( v => {
-      parser.parse(v);
-      console.log(parser.findEvents('TS1-8879A068-CE13-4DD3-B7FE-4890126284A8'));
-
-      const searchDate = new Date(Date.parse('2018-01-06'));
-      console.log(searchDate);
-      console.log(parser.findByDate( searchDate ));
-    });
-
+    // Build the Calendar
     const squares = shadowRoot.querySelector('.squares');
     renderCalendar(Schedule.year, squares).then( (success) => {
-      console.log('Done');
+      const today = formatDateLookup(new Date());
+      const li = shadowRoot.querySelector('#D' + today);
+      li.classList.toggle('today');
     });
+
+    populateCalendar(['style/assets/2018.ics']).then( (cals) => {
+      console.log( cals.findEventsById('TS1-8879A068-CE13-4DD3-B7FE-4890126284A8') );
+      const searchDate = new Date(Date.parse('2018-01-06'));
+      console.log(searchDate);
+      console.log( cals.findEventsByDate( searchDate ));
+    }).catch( error => {
+      console.log(error);
+    });
+
   };
 
   // Fires when an attribute was added, removed, or updated

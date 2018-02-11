@@ -56,17 +56,17 @@ const config = {
 };
 
 if (!DEBUG) {
-  config.module.loaders.push(
-    {
-      test: /\.ts$/,
-      loader: WebpackStrip.loader(
-        'console.log',
-        'Log.debug',
-        'Log.time',
-        'Log.timeEnd'
-      )
-    }
-  );
+  // config.module.loaders.push(
+  //   {
+  //     test: /\.ts$/,
+  //     loader: WebpackStrip.loader(
+  //       'console.log',
+  //       'Log.debug',
+  //       'Log.time',
+  //       'Log.timeEnd'
+  //     )
+  //   }
+  // );
 
   config.plugins.push(
     new UglifyJSPlugin({

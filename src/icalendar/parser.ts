@@ -18,16 +18,18 @@ export class Calendar {
 export class CalendarParser {
   calendar: Calendar;
 
-  public findEvents(id: string): CalEvent[] {
+  // if doing this for real, maybe build an index lookup
+  public findEventsById(id: string): CalEvent[] {
     return this.calendar.events.filter( e => e.id === id);
   }
 
-  public findByDate(date: Date): CalEvent[] {
+  // if doing this for real, maybe build an index lookup
+  public findEventsByDate(date: Date): CalEvent[] {
     return this.calendar.events.filter( e => {
       return (
-            e.date.getFullYear() === date.getFullYear()
-            && e.date.getMonth() === date.getMonth()
-            && e.date.getDate() === date.getDate()
+        e.date.getFullYear() === date.getFullYear()
+        && e.date.getMonth() === date.getMonth()
+        && e.date.getDate() === date.getDate()
       );
     });
   }
@@ -45,13 +47,18 @@ export class CalendarParser {
             // Warning: could lose events on malformed
             workingEvent = new CalEvent();
           } else if (lineParts[1] === 'VCALENDAR') {
-            this.calendar = new Calendar();
+            // Warning: we're not keeping multi-calendars separate
+            // all events will just be on the first calendar found
+            if (!this.calendar) {
+              this.calendar = new Calendar();
+            }
           }
           break;
         case 'END':
           if (lineParts[1] === 'VEVENT') {
             this.calendar.events.push(workingEvent);
           } else if (lineParts[1] === 'VCALENDAR') {
+            // Don't need to close the calendar currently
           }
         break;
 
@@ -71,7 +78,7 @@ export class CalendarParser {
     });
   }
 
-  // takes:  20180120T021231Z
+  // 20180120T021231Z -> Date (with no time)
   private massageDate(date: string): Date {
     const dateString = [
       date.slice(0, 4), date.slice(4, 6), date.slice(6, 8)
