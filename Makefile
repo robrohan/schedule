@@ -1,8 +1,6 @@
 
 build:
 	npm run build
-	cp -R static dist/static
-	cp src/index.html dist/index.html
 	cp src/rohan-schedule.html dist/rohan-schedule.html
 
 publish:
