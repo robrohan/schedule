@@ -162,19 +162,19 @@ $color_level3: #196127;
     }
   }
 
-  // .squares li[data-level="0"] {
-  //   background-color: $color_neutral;
-  // }
+  .squares li[data-level="0"] {
+    background-color: $color_neutral;
+  }
 
-  // .squares li[data-level="1"] {
-  //   background-color: $color_level1;
-  // }
+  .squares li[data-level="1"] {
+     background-color: $color_level1;
+  }
 
-  // .squares li[data-level="2"] {
-  //   background-color: $color_level2;
-  // }
+  .squares li[data-level="2"] {
+     background-color: $color_level2;
+  }
 
-  // .squares li[data-level="3"] {
-  //   background-color: $color_level3;
-  // }
+  .squares li[data-level="3"] {
+    background-color: $color_level3;
+  }
 }

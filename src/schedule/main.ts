@@ -22,32 +22,12 @@ const getDocuments = (doc: any) => {
   return [parentDoc, myDoc];
 };
 
-// const showDialog = (curtain: any) => {
-//   // TODO: this is dodgy, but setting a class has no effect because we are in a
-//   // component
-//   try {
-//     document.body.style = 'overflow: hidden;';
-//   } catch (e) {
-//     // This doesn't work on safari 10 (and it shouldn't really)
-//     // its here to keep the background from scrolling
-//   }
-//   curtain.classList.toggle('show');
-// };
-
-// const hideDialog = (curtain: any) => {
-//   // TODO: this is dodgy, but setting a class has no effect because we are in a
-//   // component
-//   try {
-//     document.body.style = '';
-//   } catch (e) {
-//     // This doesn't work on safari 10 (and it shouldn't really)
-//     // its here to keep the background from scrolling
-//   }
-//   curtain.classList.toggle('show');
-// };
-
 // Date -> String (used for ID selection)
 const formatDateLookup = (date: Date): string => {
+  if (!date) {
+    return '';
+  }
+
   return [
     date.getFullYear(),
     ('0' + (date.getMonth() + 1)).slice(-2),
@@ -94,7 +74,7 @@ const renderCalendar = (year: number, squares: any): Promise<boolean> => {
   });
 };
 
-const populateCalendar = (calendars: string[]): Promise<CalendarParser> => {
+const parseCalendars = (calendars: string[]): Promise<CalendarParser> => {
   return new Promise( (resolve, reject) => {
     const parser = new CalendarParser();
     const http = new Http();
@@ -117,6 +97,7 @@ const populateCalendar = (calendars: string[]): Promise<CalendarParser> => {
 const createSchedule = (parent: any, template: any) => {
   const Schedule = Object.create(HTMLElement.prototype);
   Schedule.year = new Date().getFullYear();
+  Schedule.files = [];
 
   // Fires when an instance of the element is created
   // important to put DOM reliant things here
@@ -131,21 +112,12 @@ const createSchedule = (parent: any, template: any) => {
     shadowRoot.querySelector('style').innerHTML = css;
     shadowRoot.querySelector('content').innerHTML = html;
 
-    // const button = shadowRoot.querySelectorAll('.js-open-dialog');
-    // const curtain = shadowRoot.querySelector('.js-curtain');
-
-    // button.forEach( (b: any) => {
-    //   b.addEventListener('click', (evt: Event) => {
-    //     showDialog(curtain);
-    //   });
-    //   b.addEventListener('touch', (evt: Event) => {
-    //     showDialog(curtain);
-    //   });
-    // });
-    // curtain.addEventListener('click', (evt: Event) => hideDialog(curtain));
-
     if (this.hasAttribute('year')) {
       Schedule.year = this.getAttribute('year');
+    }
+
+    if (this.hasAttribute('files')) {
+      Schedule.files = this.getAttribute('files').split(',');
     }
 
     // Build the Calendar
@@ -153,14 +125,26 @@ const createSchedule = (parent: any, template: any) => {
     renderCalendar(Schedule.year, squares).then( (success) => {
       const today = formatDateLookup(new Date());
       const li = shadowRoot.querySelector('#D' + today);
-      li.classList.toggle('today');
+      if (li) {
+        li.classList.toggle('today');
+      }
     });
 
-    populateCalendar(['style/assets/2018.ics']).then( (cals) => {
-      console.log( cals.findEventsById('TS1-8879A068-CE13-4DD3-B7FE-4890126284A8') );
-      const searchDate = new Date(Date.parse('2018-01-06'));
-      console.log(searchDate);
-      console.log( cals.findEventsByDate( searchDate ));
+    parseCalendars(Schedule.files).then( (cals) => {
+      cals.calendar.events.forEach( event => {
+        const dateKey = formatDateLookup(event.date);
+        const dom = shadowRoot.querySelector('#D' + dateKey);
+        if (dom) {
+          let level = parseInt(dom.getAttribute('data-level'), 10);
+          dom.setAttribute('data-level', ++level);
+          const content = dom.querySelector('div');
+          const text = document.createElement('div');
+          text.innerHTML = [
+            event.summary, '<br>',
+            event.description.replace(/<.*>/g, '').replace(/(\\n|\\,|\n)/g, '')].join('');
+          content.appendChild(text);
+        }
+      });
     }).catch( error => {
       console.log(error);
     });

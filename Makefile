@@ -2,7 +2,8 @@
 build:
 	npm run build
 	cp -R static dist/static
-	cp index.html dist/index.html
+	cp src/index.html dist/index.html
+	cp src/rohan-schedule.html dist/rohan-schedule.html
 
 publish:
 	./publish.sh
@@ -16,13 +17,8 @@ test:
 start:
 	npm run start
 
-doco:
-	dot -T png -O doc/core.dot
-
 release: clean remove_mac_files test build publish
 
 remove_mac_files:
 	find ./ -name ".DS_Store" -exec rm {} \;
 
-testfull:
-	npm run test:full
