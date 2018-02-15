@@ -112,7 +112,7 @@
       transform-origin: right bottom;
     }
 
-    &:hover {
+    &:active {
       z-index: 5;
       transform: scale(7);
       transition: all .3s;
